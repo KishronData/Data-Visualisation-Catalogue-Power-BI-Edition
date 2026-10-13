@@ -1,0 +1,6 @@
+EVALUATE
+SUMMARIZE(
+    Product,
+    Product[CategoryKey],
+    Product[Category Name]
+)

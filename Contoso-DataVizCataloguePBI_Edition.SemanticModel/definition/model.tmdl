@@ -1,0 +1,30 @@
+/// Contoso sample sales model, extended with supplemental tables (targets, customer feedback, category relationship network, store renovation projects) plus pre-aggregated flow tables, to support recreating every chart type in the Data Viz Catalogue (datavizcatalogue.com).
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["Currency Exchange","Customer","Date","Product","Sales","Store","Category Customer Feedback","Category Relationship Network","Sales Targets","Store Renovation Projects"]
+
+annotation PBI_ProTooling = ["MCP-PBIModeling","DaxQueryView_Desktop","TMDLView_Desktop","DevMode"]
+
+ref table 'Currency Exchange'
+ref table Customer
+ref table Date
+ref table Product
+ref table Sales
+ref table Store
+ref table 'Flow Map Store Country Customer Continent'
+ref table 'Category Customer Feedback'
+ref table 'Category Relationship Network'
+ref table 'Sales Targets'
+ref table 'Store Renovation Projects'
+ref table 'Parallel Sets Revenue'
+
+ref cultureInfo en-US
+

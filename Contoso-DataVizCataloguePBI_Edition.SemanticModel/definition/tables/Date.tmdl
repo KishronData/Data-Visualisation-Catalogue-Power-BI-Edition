@@ -1,0 +1,244 @@
+/// Standard calendar date dimension used for time intelligence across all fact and derived tables.
+table Date
+	lineageTag: c4a5f42a-c75f-4e45-99ef-b46e22f86273
+	dataCategory: Time
+
+	/// Calendar date; the primary key of the Date table and the marked date-table key column.
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: mm/dd/yyyy
+		lineageTag: 88677617-4118-4993-a4f2-07e8f1b02032
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Integer-encoded surrogate key for Date (yyyymmdd); hidden, used internally for joins.
+	column DateKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7faa80c1-7b5d-418c-8b3d-6aa1b48bceec
+		summarizeBy: none
+		sourceColumn: DateKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+	/// Calendar year of the date.
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 0592cf0f-9d5d-4f82-8a41-b43f3e3bb402
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = User
+
+	/// Year and quarter label (e.g. "2023 Q1").
+	column 'Year Quarter'
+		dataType: string
+		lineageTag: 4ff3caf3-d63d-42b3-bec6-c40146445ecc
+		summarizeBy: none
+		sourceColumn: Year Quarter
+		sortByColumn: 'Year Quarter Number'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sortable numeric key underlying Year Quarter; hidden.
+	column 'Year Quarter Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7b460fb4-2ed3-46ea-8433-30798fc22b6f
+		summarizeBy: none
+		sourceColumn: Year Quarter Number
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+	/// Calendar quarter label (e.g. "Q1").
+	column Quarter
+		dataType: string
+		lineageTag: 7e6c2035-2a64-4416-8c66-5dbab925442d
+		summarizeBy: none
+		sourceColumn: Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Year and month label (e.g. "2023 January").
+	column 'Year Month'
+		dataType: string
+		lineageTag: 922e48e7-4347-4e33-9ac2-756992a82896
+		summarizeBy: none
+		sourceColumn: Year Month
+		sortByColumn: 'Year Month Number'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Abbreviated year and month label (e.g. "2023 Jan").
+	column 'Year Month Short'
+		dataType: string
+		lineageTag: 48e66a64-3e3d-4468-97cf-7a142a0a13e4
+		summarizeBy: none
+		sourceColumn: Year Month Short
+		sortByColumn: 'Year Month Number'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sortable numeric key underlying the Year Month columns; hidden.
+	column 'Year Month Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 8a59d1a2-cc69-45dd-9501-01b83741b5b2
+		summarizeBy: none
+		sourceColumn: Year Month Number
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+	/// Full calendar month name.
+	column Month
+		dataType: string
+		lineageTag: a88ef27f-7549-476d-a6d4-9d86e8d3c40f
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Month Number'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Abbreviated calendar month name.
+	column 'Month Short'
+		dataType: string
+		lineageTag: 826545bf-4182-4a34-aee4-16249e444e2b
+		summarizeBy: none
+		sourceColumn: Month Short
+		sortByColumn: 'Month Number'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Numeric month of year (1-12), used to sort Month and Month Short.
+	column 'Month Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 412537d1-9d44-49d9-98dc-5672d490dafe
+		summarizeBy: none
+		sourceColumn: Month Number
+
+		annotation SummarizationSetBy = User
+
+	/// Full day-of-week name.
+	column 'Day of Week'
+		dataType: string
+		lineageTag: d54a1e3d-674b-414d-92e1-388132a3a730
+		summarizeBy: none
+		sourceColumn: Day of Week
+		sortByColumn: 'Day of Week Number'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Abbreviated day-of-week name.
+	column 'Day of Week Short'
+		dataType: string
+		lineageTag: 39c9b93f-b0ea-457b-ae95-c157015a542a
+		summarizeBy: none
+		sourceColumn: Day of Week Short
+		sortByColumn: 'Day of Week Number'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Numeric day of week, used to sort Day of Week and Day of Week Short.
+	column 'Day of Week Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: c2e27762-8b9e-41d8-ace9-d06a5c26658c
+		summarizeBy: none
+		sourceColumn: Day of Week Number
+
+		annotation SummarizationSetBy = User
+
+	/// Flag indicating whether the date is a working day (1) or not (0).
+	column 'Working Day'
+		dataType: int64
+		formatString: 0
+		lineageTag: 5861d55d-dc20-4f63-bd53-ba598062436a
+		summarizeBy: none
+		sourceColumn: Working Day
+
+		annotation SummarizationSetBy = User
+
+	/// Sequential working-day counter used for working-day-based calculations.
+	column 'Working Day Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: d04b4e62-00a0-417f-9943-244f596719c6
+		summarizeBy: none
+		sourceColumn: Working Day Number
+
+		annotation SummarizationSetBy = User
+
+	column Era
+		dataType: string
+		lineageTag: 95a46d03-8a9b-433c-8daa-3715b2ba59ec
+		summarizeBy: none
+		sourceColumn: Era
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Calendar drill-down path: Year > Quarter > Month.
+	hierarchy 'Date Hierarchy'
+		lineageTag: c25e3a73-9eb3-4002-afa4-153de5974d32
+
+		level Year
+			lineageTag: 7b6f16cf-9685-4062-9591-da46b457fb6b
+			column: Year
+
+		level Quarter
+			lineageTag: e1475892-717b-497e-b40c-93fa85678b22
+			column: Quarter
+
+		level Month
+			lineageTag: fe7fecfa-2fdb-4ea2-a313-0e40c12b5608
+			column: Month
+
+	partition Date = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\michael.hewitt\OneDrive - Michael Hewitt\Talks\Contoso csv-1m\date.csv"),[Delimiter=",", Columns=17, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Date", type date}, {"DateKey", Int64.Type}, {"Year", Int64.Type}, {"YearQuarter", type text}, {"YearQuarterNumber", Int64.Type}, {"Quarter", type text}, {"YearMonth", type text}, {"YearMonthShort", type text}, {"YearMonthNumber", Int64.Type}, {"Month", type text}, {"MonthShort", type text}, {"MonthNumber", Int64.Type}, {"DayofWeek", type text}, {"DayofWeekShort", type text}, {"DayofWeekNumber", Int64.Type}, {"WorkingDay", Int64.Type}, {"WorkingDayNumber", Int64.Type}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"YearQuarter", "Year Quarter"}, {"YearQuarterNumber", "Year Quarter Number"}, {"YearMonth", "Year Month"}, {"YearMonthShort", "Year Month Short"}, {"YearMonthNumber", "Year Month Number"}, {"MonthShort", "Month Short"}, {"MonthNumber", "Month Number"}, {"DayofWeek", "Day of Week"}, {"DayofWeekShort", "Day of Week Short"}, {"DayofWeekNumber", "Day of Week Number"}, {"WorkingDay", "Working Day"}, {"WorkingDayNumber", "Working Day Number"}}),
+				    LastSalesDate = List.Max(Sales[OrderDate]),
+				    #"Filtered to Sales Range" = Table.SelectRows(#"Renamed Columns", each [Date] <= LastSalesDate),
+				    #"Added Conditional Column" = Table.AddColumn(#"Filtered to Sales Range", "Era", each if [Year] >= 2015 and [Year] <= 2017 then "2015-2017" else if [Year] >= 2018 and [Year] <= 2020 then "2018-2020" else if [Year] >= 2021 and [Year] <= 2023 then "2021-2023" else null, type text)
+				in
+				    #"Added Conditional Column"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

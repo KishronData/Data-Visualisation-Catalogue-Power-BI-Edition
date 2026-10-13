@@ -1,0 +1,126 @@
+/// Synthetic store lifecycle project timeline (fit-out, refresh, renovation, decommissioning) with task dependencies. Built for Gantt chart visuals.
+table 'Store Renovation Projects'
+	lineageTag: 7699afd9-eb77-4766-abd3-9c3099ba2f4f
+
+	/// Surrogate key uniquely identifying each renovation/lifecycle project task.
+	column ProjectID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e37276dc-6af9-49db-a78e-e2e8957386cc
+		summarizeBy: none
+		sourceColumn: ProjectID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+	/// Foreign key to Store identifying which store the project belongs to.
+	column StoreKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7abf7dc1-0ba7-4276-853b-e189df9ecd0d
+		summarizeBy: none
+		sourceColumn: StoreKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Country of the store the project belongs to, denormalized for convenience. Hidden: slice by Store[Country Name] instead.
+	column CountryName
+		dataType: string
+		isHidden
+		lineageTag: bac5e5d9-240f-4721-b0cd-f53d03764d32
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: CountryName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// State or province of the store the project belongs to, denormalized for convenience. Hidden: slice by Store[State] instead.
+	column State
+		dataType: string
+		isHidden
+		lineageTag: 310998cb-9b00-458e-9cdf-e550837db19f
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: State
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Name of the project task (e.g. Initial Fit-Out, Interior Refresh, Storefront Expansion, Closure Decommissioning).
+	column TaskName
+		dataType: string
+		lineageTag: 27002f4a-8d4f-44af-a2e6-fb193679887e
+		summarizeBy: none
+		sourceColumn: TaskName
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Task start date.
+	column StartDate
+		dataType: dateTime
+		formatString: mm/dd/yyyy
+		lineageTag: 508618cb-d4b5-4418-882e-957a31c00a08
+		summarizeBy: none
+		sourceColumn: StartDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Task end date.
+	column EndDate
+		dataType: dateTime
+		formatString: mm/dd/yyyy
+		lineageTag: 7bee56a3-8494-4eb2-9b81-fba103af5f90
+		summarizeBy: none
+		sourceColumn: EndDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Percentage of the task completed as of the Sales table's data cutoff (2024-04-20), stored as a whole number (70 = 70%). Averages, never sums.
+	column PercentComplete
+		dataType: int64
+		formatString: 0\%
+		lineageTag: 7f1693ae-54f9-4ffe-ac89-b3be419343b0
+		summarizeBy: average
+		sourceColumn: PercentComplete
+
+		annotation SummarizationSetBy = User
+
+	/// ProjectID of the task that must complete before this one starts, if any; enables dependency arrows in a Gantt chart.
+	column PredecessorProjectID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d8a3fcbd-001d-47de-8cfc-d6c4c317b37e
+		summarizeBy: none
+		sourceColumn: PredecessorProjectID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+	partition 'Store Renovation Projects' = m
+		mode: import
+		source =
+				let
+				  Source = Csv.Document(File.Contents("C:\Users\michael.hewitt\OneDrive - Michael Hewitt\YouTube\ContosoDataVizCSVs\Store Renovation Projects.csv"), [Delimiter = ",", Columns = 9, Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+				  #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				  #"Changed column type" = Table.TransformColumnTypes(#"Promoted headers", {{"ProjectID", Int64.Type}, {"StoreKey", Int64.Type}, {"CountryName", type text}, {"State", type text}, {"TaskName", type text}, {"StartDate", type date}, {"EndDate", type date}, {"PercentComplete", Int64.Type}, {"PredecessorProjectID", Int64.Type}})
+				in
+				  #"Changed column type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,63 @@
+/// Daily foreign exchange rates used to convert local-currency sales back to a common reporting currency.
+table 'Currency Exchange'
+	lineageTag: 83558882-35d1-42b8-bdba-9a3edd50c1a1
+
+	/// Date this exchange rate was recorded; joins to the Date table for time-based currency conversion. Hidden.
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: b305726d-630e-4b6d-8b1f-81312c88d8f6
+		summarizeBy: none
+		sourceColumn: Date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Three-letter ISO code of the currency being converted from.
+	column 'From Currency'
+		dataType: string
+		lineageTag: 3b3bab0a-2c80-48d3-b648-8954e3f0da8c
+		summarizeBy: none
+		sourceColumn: From Currency
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Three-letter ISO code of the currency being converted to (typically the reporting currency).
+	column 'To Currency'
+		dataType: string
+		lineageTag: 605ed467-1a5d-4c2d-9647-1afe0d7a6de4
+		summarizeBy: none
+		sourceColumn: To Currency
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Exchange rate multiplier applied to convert an amount from the source currency to the target currency.
+	column Exchange
+		dataType: double
+		lineageTag: 72f3026a-c79d-4c8b-ae5f-f73d39272f0c
+		summarizeBy: sum
+		sourceColumn: Exchange
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Currency Exchange' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\michael.hewitt\OneDrive - Michael Hewitt\Talks\Contoso csv-1m\currencyexchange.csv"),[Delimiter=",", Columns=4, Encoding=1252, 	QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Date", type date}, {"FromCurrency", type text}, {"ToCurrency", type text}, {"Exchange", type number}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"FromCurrency", "From Currency"}, {"ToCurrency", "To Currency"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,9 @@
+EVALUATE
+ROW(
+    "MinDate", MIN(Sales[OrderDate]),
+    "MaxDate", MAX(Sales[OrderDate]),
+    "Rows", COUNTROWS(Sales),
+    "Customers", DISTINCTCOUNT(Sales[CustomerKey]),
+    "Products", DISTINCTCOUNT(Sales[ProductKey]),
+    "Stores", DISTINCTCOUNT(Sales[StoreKey])
+)

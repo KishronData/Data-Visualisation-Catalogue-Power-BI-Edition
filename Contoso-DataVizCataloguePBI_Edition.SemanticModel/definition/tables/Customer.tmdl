@@ -1,0 +1,273 @@
+/// Customer dimension containing demographic, geographic, and loyalty attributes for every customer who has placed an order.
+table Customer
+	lineageTag: 7eb6a17f-55c2-4873-9bed-b81ce0e72fbb
+
+	/// Surrogate key uniquely identifying each customer; used to relate Sales to Customer. Hidden.
+	column CustomerKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 1fba42b8-567a-4d44-a57b-46c0a25557c9
+		summarizeBy: none
+		sourceColumn: CustomerKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Internal geographic grouping key used during data preparation; not intended for reporting. Hidden.
+	column GeoAreaKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6d572a3d-8337-4492-b4eb-d9943cef0022
+		summarizeBy: none
+		sourceColumn: GeoAreaKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Date the customer's loyalty/account record became effective.
+	column 'Start Date'
+		dataType: dateTime
+		formatString: mm/dd/yyyy
+		lineageTag: 125571ec-29ed-476f-aa4e-1eb85f85ec1f
+		summarizeBy: none
+		sourceColumn: Start Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Date the customer's loyalty/account record was superseded or closed, if applicable.
+	column 'End Date'
+		dataType: dateTime
+		formatString: mm/dd/yyyy
+		lineageTag: cfaa75de-1130-4321-aad2-f96dec12ad3c
+		summarizeBy: none
+		sourceColumn: End Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Continent of the customer's registered address.
+	column Continent
+		dataType: string
+		lineageTag: 4e2b0032-5eb4-4095-80f2-c326f2847092
+		dataCategory: Continent
+		summarizeBy: none
+		sourceColumn: Continent
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Customer's recorded gender.
+	column Gender
+		dataType: string
+		lineageTag: 30855944-c1f4-4253-b135-18626e58cec4
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Customer's honorific title (e.g. Mr., Mrs., Dr.).
+	column Title
+		dataType: string
+		lineageTag: d498e9a9-6d0d-49ee-a3b2-3e6e89cc14ff
+		summarizeBy: none
+		sourceColumn: Title
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Customer's first name.
+	column 'Given Name'
+		dataType: string
+		lineageTag: 17fb994a-5e0a-483c-b895-73cbaefa71c6
+		summarizeBy: none
+		sourceColumn: Given Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Customer's middle initial, if recorded.
+	column 'Middle Initial'
+		dataType: string
+		lineageTag: 4c8fc1e0-52c5-48f8-a31d-86a6257b729d
+		summarizeBy: none
+		sourceColumn: Middle Initial
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Customer's last name.
+	column Surname
+		dataType: string
+		lineageTag: 437eddc2-941c-4f23-b594-62baafae813c
+		summarizeBy: none
+		sourceColumn: Surname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Customer's street address.
+	column 'Street Address'
+		dataType: string
+		lineageTag: bb0d19c7-2430-42f5-9441-f46c3023284c
+		dataCategory: Address
+		summarizeBy: none
+		sourceColumn: Street Address
+
+		annotation SummarizationSetBy = Automatic
+
+	/// City of the customer's registered address.
+	column City
+		dataType: string
+		lineageTag: 0e17aa6e-07e6-4923-9fa5-38e5062472f2
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: City
+
+		annotation SummarizationSetBy = Automatic
+
+	/// State or province abbreviation of the customer's registered address.
+	column State
+		dataType: string
+		lineageTag: 09a955bd-1f66-42dd-a16f-b5e10e782b98
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Full state or province name of the customer's registered address.
+	column 'State Full'
+		dataType: string
+		lineageTag: 4a577044-1255-4687-8e00-18cc39f27854
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: State Full
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Postal/ZIP code of the customer's registered address.
+	column 'Zip Code'
+		dataType: string
+		lineageTag: 1bb066c2-1cd0-4f0b-b89a-8cfa184e1e53
+		dataCategory: PostalCode
+		summarizeBy: none
+		sourceColumn: Zip Code
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Two-letter country code of the customer's registered address.
+	column Country
+		dataType: string
+		lineageTag: 9e380ac8-fad5-460d-9431-a4c2b20c6cbf
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: Country
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Full country name of the customer's registered address.
+	column 'Country Full'
+		dataType: string
+		lineageTag: b08be9d0-2fd4-4722-8e8c-ccd73f24b618
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: Country Full
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Customer's date of birth.
+	column Birthday
+		dataType: dateTime
+		formatString: mm/dd/yyyy
+		lineageTag: fe86efe4-db2e-48d3-b92a-7a29b2c9ab47
+		summarizeBy: none
+		sourceColumn: Birthday
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Customer's age in years, derived from Birthday.
+	column Age
+		dataType: int64
+		formatString: 0
+		lineageTag: 7ed08ac5-0f84-4051-8ce3-49658bd00cef
+		summarizeBy: none
+		sourceColumn: Age
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Customer's recorded occupation.
+	column Occupation
+		dataType: string
+		lineageTag: 77f2f925-8879-4f8a-9dc1-cd9a2fbb42ce
+		summarizeBy: none
+		sourceColumn: Occupation
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Employer or company associated with the customer, if recorded.
+	column Company
+		dataType: string
+		lineageTag: 590a7d8d-dd06-4de9-b0fe-7563e25e2c3a
+		summarizeBy: none
+		sourceColumn: Company
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Vehicle make/model associated with the customer, if recorded.
+	column Vehicle
+		dataType: string
+		lineageTag: 26e2b820-9b7c-43ec-a08c-3402b43c428e
+		summarizeBy: none
+		sourceColumn: Vehicle
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Latitude coordinate of the customer's registered address, for mapping.
+	column Latitude
+		dataType: double
+		lineageTag: 80d676ed-9ef8-4dff-b6f0-9f64b828a704
+		dataCategory: Latitude
+		summarizeBy: none
+		sourceColumn: Latitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Longitude coordinate of the customer's registered address, for mapping.
+	column Longitude
+		dataType: double
+		lineageTag: 87a2edc1-a611-473c-8578-1ce39f34dd0a
+		dataCategory: Longitude
+		summarizeBy: none
+		sourceColumn: Longitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Customer = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\michael.hewitt\OneDrive - Michael Hewitt\Talks\Contoso csv-1m\customer.csv"),[Delimiter=",", Columns=24, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"CustomerKey", Int64.Type}, {"GeoAreaKey", Int64.Type}, {"StartDT", type date}, {"EndDT", type date}, {"Continent", type text}, {"Gender", type text}, {"Title", type text}, {"GivenName", type text}, {"MiddleInitial", type text}, {"Surname", type text}, {"StreetAddress", type text}, {"City", type text}, {"State", type text}, {"StateFull", type text}, {"ZipCode", type text}, {"Country", type text}, {"CountryFull", type text}, {"Birthday", type date}, {"Age", Int64.Type}, {"Occupation", type text}, {"Company", type text}, {"Vehicle", type text}, {"Latitude", type number}, {"Longitude", type number}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"StartDT", "Start Date"}, {"EndDT", "End Date"}, {"GivenName", "Given Name"}, {"MiddleInitial", "Middle Initial"}, {"StreetAddress", "Street Address"}, {"StateFull", "State Full"}, {"ZipCode", "Zip Code"}, {"CountryFull", "Country Full"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,87 @@
+/// Synthetic customer review text by product category, generated to support word cloud and sentiment visuals. Not sourced from real customer feedback.
+table 'Category Customer Feedback'
+	lineageTag: 268f01ea-af19-44dc-b328-70d3bffce905
+
+	/// Surrogate key uniquely identifying each synthetic review.
+	column ReviewID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 19b681c9-5831-47b3-92f5-fc77f955394b
+		summarizeBy: none
+		sourceColumn: ReviewID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+	/// Foreign key to Product[CategoryKey] identifying which category the review is about (many-to-many).
+	column CategoryKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2140afbb-305b-4774-9ea3-319685e0ce84
+		summarizeBy: none
+		sourceColumn: CategoryKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+	/// Product category the review is about, denormalized for convenience. Hidden: slice by Product[Category Name] instead.
+	column CategoryName
+		dataType: string
+		isHidden
+		lineageTag: c162b70a-f33b-46ee-8aa6-373f8ed75b69
+		summarizeBy: none
+		sourceColumn: CategoryName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Date the synthetic review was posted, spread across the Sales table's date range (2015-2024). Relates to Date[Date].
+	column ReviewDate
+		dataType: dateTime
+		formatString: mm/dd/yyyy
+		lineageTag: 32388782-366f-4155-a0a2-1e54c1c97ed3
+		summarizeBy: none
+		sourceColumn: ReviewDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Star rating (1-5) associated with the synthetic review; drives whether the generated text is positive, neutral, or negative. Averages, never sums.
+	column Rating
+		dataType: int64
+		formatString: 0.0
+		lineageTag: 42f2df52-9643-4477-a61f-79464b45c51c
+		summarizeBy: average
+		sourceColumn: Rating
+
+		annotation SummarizationSetBy = User
+
+	/// Synthetic review sentence, tokenizable for word-frequency/word cloud visuals. Not real customer feedback.
+	column ReviewText
+		dataType: string
+		lineageTag: 9d338b55-3bf6-444e-b2de-1ec3dfc25bf0
+		summarizeBy: none
+		sourceColumn: ReviewText
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Category Customer Feedback' = m
+		mode: import
+		source =
+				let
+				  Source = Csv.Document(File.Contents("C:\Users\michael.hewitt\OneDrive - Michael Hewitt\YouTube\ContosoDataVizCSVs\Category Customer Feedback.csv"), [Delimiter = ",", Columns = 6, Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+				  #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				  #"Changed column type" = Table.TransformColumnTypes(#"Promoted headers", {{"ReviewID", Int64.Type}, {"CategoryKey", Int64.Type}, {"CategoryName", type text}, {"ReviewDate", type date}, {"Rating", Int64.Type}, {"ReviewText", type text}})
+				in
+				  #"Changed column type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

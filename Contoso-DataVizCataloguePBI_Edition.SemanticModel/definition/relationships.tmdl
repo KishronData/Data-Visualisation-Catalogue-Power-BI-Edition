@@ -1,0 +1,42 @@
+relationship AutoDetected_a7d96c16-fcf6-421d-a9b3-33ee58372252
+	fromColumn: Sales.CustomerKey
+	toColumn: Customer.CustomerKey
+
+relationship AutoDetected_ffd38e1a-d4d0-4ac7-b5d4-833771c0db4b
+	fromColumn: Sales.ProductKey
+	toColumn: Product.ProductKey
+
+relationship AutoDetected_73cddc49-2366-4671-aa1e-f6fa02f6e182
+	fromColumn: Sales.StoreKey
+	toColumn: Store.StoreKey
+
+relationship b4f38952-73dd-fae6-fcdf-ae9611fa02ec
+	fromColumn: 'Currency Exchange'.Date
+	toColumn: Date.Date
+
+relationship e3a45aaf-efe5-0ee1-11b0-725a9ff75108
+	fromColumn: Sales.OrderDate
+	toColumn: Date.Date
+
+relationship AutoDetected_3d4e296c-e74c-4147-a2a3-3819b8d96d20
+	fromColumn: 'Store Renovation Projects'.StoreKey
+	toColumn: Store.StoreKey
+
+relationship CategoryCustomerFeedback_Product
+	toCardinality: many
+	fromColumn: 'Category Customer Feedback'.CategoryKey
+	toColumn: Product.CategoryKey
+
+relationship SalesTargets_Product
+	toCardinality: many
+	fromColumn: 'Sales Targets'.CategoryKey
+	toColumn: Product.CategoryKey
+
+relationship SalesTargets_Date
+	fromColumn: 'Sales Targets'.MonthStartDate
+	toColumn: Date.Date
+
+relationship CategoryCustomerFeedback_Date
+	fromColumn: 'Category Customer Feedback'.ReviewDate
+	toColumn: Date.Date
+

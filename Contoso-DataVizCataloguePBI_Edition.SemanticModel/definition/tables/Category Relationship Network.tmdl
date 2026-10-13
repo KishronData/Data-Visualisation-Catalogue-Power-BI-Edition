@@ -1,0 +1,80 @@
+/// Pairwise correlation of each product category's real annual revenue trend (2015-2024). Built for network/chord/arc diagram visuals showing which categories move together economically.
+table 'Category Relationship Network'
+	lineageTag: af841183-c9ae-4983-838e-4b37a4c87396
+
+	/// First product category in the pair.
+	column CategoryA
+		dataType: string
+		lineageTag: 23d81131-ae1e-44fa-82e7-fb5a788b2e6c
+		summarizeBy: none
+		sourceColumn: CategoryA
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Second product category in the pair.
+	column CategoryB
+		dataType: string
+		lineageTag: 598718a0-4b72-40d7-a52c-9954268ec321
+		summarizeBy: none
+		sourceColumn: CategoryB
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Pearson correlation coefficient (-1 to 1) of CategoryA's and CategoryB's real annual revenue, 2015-2024.
+	column Correlation
+		dataType: double
+		formatString: 0.00
+		lineageTag: 9f512790-96c7-47bf-bba9-cd28d835e026
+		summarizeBy: average
+		sourceColumn: Correlation
+
+		annotation SummarizationSetBy = User
+
+	/// Human-readable bucket of the Correlation value (Strong Positive, Moderate Positive, Weak / Independent, Moderate Negative, Strong Negative). Sorted by strength, not alphabetically.
+	column RelationshipType
+		dataType: string
+		lineageTag: 946d216f-86f1-444e-8e04-65e48ddd68c8
+		summarizeBy: none
+		sourceColumn: RelationshipType
+		sortByColumn: RelationshipTypeSort
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Absolute value of Correlation scaled 0-10; suitable as an edge weight/thickness in a network or chord diagram.
+	column LinkWeight
+		dataType: double
+		formatString: 0.00
+		lineageTag: a75f5e7d-9675-473d-ad28-85522b08ddff
+		summarizeBy: average
+		sourceColumn: LinkWeight
+
+		annotation SummarizationSetBy = User
+
+	/// Sort order for RelationshipType, running strongest positive (1) to strongest negative (5). Hidden; exists only to drive sort order. Derived from Correlation rather than RelationshipType, because sorting a column by a calculated column that reads it back creates a circular dependency.
+	column RelationshipTypeSort = SWITCH(TRUE(), 'Category Relationship Network'[Correlation] >= 0.7, 1, 'Category Relationship Network'[Correlation] >= 0.3, 2, 'Category Relationship Network'[Correlation] > -0.3, 3, 'Category Relationship Network'[Correlation] > -0.7, 4, 5)
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 358de5b4-57b0-4592-9bc4-d58e2daa8652
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Category Relationship Network' = m
+		mode: import
+		source =
+				let
+				  Source = Csv.Document(File.Contents("C:\Users\michael.hewitt\OneDrive - Michael Hewitt\YouTube\ContosoDataVizCSVs\Category Relationship Network.csv"), [Delimiter = ",", Columns = 5, Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+				  #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				  #"Changed column type" = Table.TransformColumnTypes(#"Promoted headers", {{"CategoryA", type text}, {"CategoryB", type text}, {"Correlation", type number}, {"RelationshipType", type text}, {"LinkWeight", type number}})
+				in
+				  #"Changed column type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,158 @@
+/// Store dimension containing physical and online retail locations, including geography, size, and lifecycle status.
+table Store
+	lineageTag: 2329c626-cbca-4b7d-b11a-403bc761f99d
+
+	/// Surrogate key uniquely identifying each store; used to relate Sales and Store Renovation Projects to Store. Hidden.
+	column StoreKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 9d0938df-a6f9-4db1-8548-8bd827c8fea6
+		summarizeBy: none
+		sourceColumn: StoreKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Business code identifying the store.
+	column StoreCode
+		dataType: int64
+		formatString: 0
+		lineageTag: 5d18caad-0649-4cff-9000-3ac6f5dea19a
+		summarizeBy: none
+		sourceColumn: StoreCode
+
+		annotation SummarizationSetBy = User
+
+	/// Internal geographic grouping key used during data preparation; not intended for reporting. Hidden.
+	column GeoAreaKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 92e82a94-c6a3-48a0-956d-d4295bf52e60
+		summarizeBy: none
+		sourceColumn: GeoAreaKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+	/// Two-letter ISO country code of the store's location.
+	column 'Country Code'
+		dataType: string
+		lineageTag: e2cb1f93-05d8-4e57-8bcb-3e5a57c9aae2
+		summarizeBy: none
+		sourceColumn: Country Code
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Country name of the store's location. "Online" for the e-commerce store, which has no physical footprint.
+	column 'Country Name'
+		dataType: string
+		lineageTag: 3a049b06-6a8c-4ea9-ba06-ce0c8260d895
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: Country Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// State or province of the store's location.
+	column State
+		dataType: string
+		lineageTag: 5dcb4368-71c6-4912-9a81-ae6a793baefb
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Date the store opened for business.
+	column 'Open Date'
+		dataType: dateTime
+		formatString: mm/dd/yyyy
+		lineageTag: 1ee354f5-cab4-4779-9c55-a1b4461dbbe9
+		summarizeBy: none
+		sourceColumn: Open Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Date the store closed or was restructured out of operation, if applicable.
+	column 'Close Date'
+		dataType: dateTime
+		formatString: mm/dd/yyyy
+		lineageTag: c7cc538c-92b0-4883-982c-ea2a22b080d4
+		summarizeBy: none
+		sourceColumn: Close Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Free-text description of the store.
+	column Description
+		dataType: string
+		lineageTag: b55d4086-bea5-4996-a09c-5f50055ef1ac
+		summarizeBy: none
+		sourceColumn: Description
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Retail floor area of the store, in square meters. Blank for the Online store.
+	column 'Square Meters'
+		dataType: int64
+		formatString: 0
+		lineageTag: a6be939f-a002-46f5-a1b7-eb8c6011e364
+		summarizeBy: sum
+		sourceColumn: Square Meters
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Current operating status of the store (e.g. On, Closed, Restructured).
+	column Status
+		dataType: string
+		lineageTag: 591610f9-444f-4f0d-9752-6457cfb9bf09
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column Continent
+		dataType: string
+		lineageTag: f35b5311-cb39-4b32-8559-0939b389dfdb
+		summarizeBy: none
+		sourceColumn: Continent
+
+		annotation SummarizationSetBy = Automatic
+
+	column Channel
+		dataType: string
+		lineageTag: 27559b5c-a792-4132-a91d-211284980092
+		summarizeBy: none
+		sourceColumn: Channel
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Store = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\michael.hewitt\OneDrive - Michael Hewitt\Talks\Contoso csv-1m\store.csv"),[Delimiter=",", Columns=11, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"StoreKey", Int64.Type}, {"StoreCode", Int64.Type}, {"GeoAreaKey", Int64.Type}, {"CountryCode", type text}, {"CountryName", type text}, {"State", type text}, {"OpenDate", type date}, {"CloseDate", type date}, {"Description", type text}, {"SquareMeters", Int64.Type}, {"Status", type text}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"CountryCode", "Country Code"}, {"CountryName", "Country Name"}, {"OpenDate", "Open Date"}, {"CloseDate", "Close Date"}, {"SquareMeters", "Square Meters"}}),
+				    #"Added Conditional Column" = Table.AddColumn(#"Renamed Columns", "Continent", each if [Country Name] = "Australia" then "Australia" else if [Country Name] = "Canada" then "North America" else if [Country Name] = "France" then "Europe" else if [Country Name] = "Germany" then "Europe" else if [Country Name] = "Italy" then "Europe" else if [Country Name] = "Netherlands" then "Europe" else if [Country Name] = "United States" then "North America" else if [Country Name] = "United Kingdom" then "Europe" else if [Country Name] = "Online" then "Online" else null, type text),
+				    #"Added Conditional Column1" = Table.AddColumn(#"Added Conditional Column", "Channel", each if [Country Name] = "Online" then "Online" else "In Store", type text)
+				in
+				    #"Added Conditional Column1"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

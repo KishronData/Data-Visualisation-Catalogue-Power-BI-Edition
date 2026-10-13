@@ -1,0 +1,364 @@
+/// Sales transaction fact table containing one row per order line, with pricing, cost, and delivery details.
+table Sales
+	lineageTag: 3732024a-fcd9-43bd-a272-b102f9945c9c
+
+	measure Quantity = SUM( Sales[Quantity_col] )
+		formatString: #,0
+		lineageTag: f45cf124-3b3f-485c-af87-98db304d358c
+
+	measure 'Quantity Percent of Category Total' =
+			
+			VAR Total = CALCULATE( [Quantity], REMOVEFILTERS( 'Product'[Category Name] ) )
+			RETURN
+			DIVIDE( [Quantity], Total )
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 4a10664c-1308-4155-8149-3f39e99ac544
+
+	measure Revenue = SUMX(Sales, Sales[Net Price] * Sales[Quantity_col])
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: Financials
+		lineageTag: 60f05355-8460-4455-bdf2-9f6df03da9fd
+
+	measure 'Total Cost' = SUMX(Sales, Sales[Unit Cost] * Sales[Quantity_col])
+		formatString: #,0.00
+		displayFolder: Financials
+		lineageTag: 6fcdfda8-44a3-4bca-af83-ea9609c6065d
+
+	measure 'Gross Profit' = [Revenue] - [Total Cost]
+		formatString: #,0.00
+		displayFolder: Financials
+		lineageTag: 4fbbc939-771c-4e42-8c91-4d0f701863dc
+
+	measure 'Gross Margin %' = DIVIDE([Gross Profit], [Revenue])
+		formatString: 0.0%
+		displayFolder: Financials
+		lineageTag: 0740d9a1-c3f0-4dd2-869d-3a915fd7eaf6
+
+	measure 'Discount Amount' = SUMX(Sales, (Sales[Unit Price] - Sales[Net Price]) * Sales[Quantity_col])
+		formatString: #,0.00
+		displayFolder: Financials
+		lineageTag: d27a8852-c88c-4bce-88b1-d9dc21823775
+
+	measure 'Discount %' = DIVIDE([Discount Amount], SUMX(Sales, Sales[Unit Price] * Sales[Quantity_col]))
+		formatString: 0.0%
+		displayFolder: Financials
+		lineageTag: d1d832ab-c2c0-4ea6-8c41-a4f989bb87af
+
+	measure 'Revenue YTD' = TOTALYTD([Revenue], 'Date'[Date])
+		formatString: #,0.00
+		displayFolder: Time Intelligence
+		lineageTag: b65c8189-4087-4336-acbd-354e248df4b8
+
+	measure 'Revenue PY' = CALCULATE([Revenue], SAMEPERIODLASTYEAR('Date'[Date]))
+		formatString: #,0.00
+		displayFolder: Time Intelligence
+		lineageTag: 8b89ff03-e6a3-4146-861a-003702263322
+
+	measure 'Revenue YoY Change' = [Revenue] - [Revenue PY]
+		formatString: #,0.00
+		displayFolder: Time Intelligence
+		lineageTag: 6eaaf224-b6b7-4aee-8706-d814f7582e80
+
+	measure 'Revenue YoY %' = DIVIDE([Revenue YoY Change], [Revenue PY])
+		formatString: 0.0%
+		displayFolder: Time Intelligence
+		lineageTag: 5a9e0f23-ce4c-471d-a847-0a8a982b7567
+
+	measure 'Revenue MTD' = TOTALMTD([Revenue], 'Date'[Date])
+		formatString: #,0.00
+		displayFolder: Time Intelligence
+		lineageTag: 6edf7efb-7875-4759-b143-75d6f98d7eb0
+
+	measure 'Order Count' = DISTINCTCOUNT(Sales[OrderKey])
+		formatString: #,0
+		displayFolder: Orders & Customers
+		lineageTag: d09a26b5-2368-4b8b-946b-37180eaded76
+
+	measure 'Customer Count' = DISTINCTCOUNT(Sales[CustomerKey])
+		formatString: #,0
+		displayFolder: Orders & Customers
+		lineageTag: dab09f69-4a3c-4f30-a318-0e539f214837
+
+	measure 'Average Order Value' = DIVIDE([Revenue], [Order Count])
+		formatString: #,0.00
+		displayFolder: Orders & Customers
+		lineageTag: 8f9ae678-6827-4b59-9bcb-0232bb9b81cf
+
+	measure 'Revenue per Customer' = DIVIDE([Revenue], [Customer Count])
+		formatString: #,0.00
+		displayFolder: Orders & Customers
+		lineageTag: 61381039-98fb-47d2-88af-206dbf23dcae
+
+	measure 'Avg Delivery Days' = AVERAGEX(Sales, Sales[DeliveryDate] - Sales[OrderDate])
+		formatString: 0.0
+		displayFolder: Operational
+		lineageTag: 835c2e3b-2200-45cc-9cae-90177d1934cd
+
+	measure 'Revenue per Sqm' = DIVIDE([Revenue], SUM(Store[Square Meters]))
+		formatString: #,0.00
+		displayFolder: Store Performance
+		lineageTag: 6aeab171-5d16-4f9d-a64a-8babddf2cc19
+
+	measure 'Gross Profit YTD' = TOTALYTD([Gross Profit], 'Date'[Date])
+		formatString: #,0.00
+		displayFolder: Time Intelligence
+		lineageTag: 615e3f03-a852-40d7-b17d-7e211d88f339
+
+	measure 'Gross Profit YoY %' = DIVIDE([Gross Profit] - CALCULATE([Gross Profit], SAMEPERIODLASTYEAR('Date'[Date])), CALCULATE([Gross Profit], SAMEPERIODLASTYEAR('Date'[Date])))
+		formatString: 0.0%
+		displayFolder: Time Intelligence
+		lineageTag: 94ccbc08-21ed-459e-b1e5-6b8c6df5313a
+
+	measure 'Gross Margin % PY' = CALCULATE([Gross Margin %], SAMEPERIODLASTYEAR('Date'[Date]))
+		formatString: 0.0%
+		displayFolder: Time Intelligence
+		lineageTag: 17178d9d-c30e-49ab-ba6b-50877fb27641
+
+	measure 'Average Selling Price' = DIVIDE([Revenue], [Quantity])
+		formatString: #,0.00
+		displayFolder: Financials
+		lineageTag: 83a27fbb-b0f3-4073-93c2-e11c9a26b7e8
+
+	measure 'Units per Order' = DIVIDE([Quantity], [Order Count])
+		formatString: 0.0
+		displayFolder: Orders & Customers
+		lineageTag: 05c3a7f7-bd49-45a3-b288-92c7c01a170a
+
+	measure 'Active Store Count' = CALCULATE(DISTINCTCOUNT(Sales[StoreKey]), Store[Status] = "On")
+		formatString: #,0
+		displayFolder: Store Performance
+		lineageTag: 679b656f-8211-47ad-accf-11ef2f424a69
+
+	measure 'Revenue per Active Store' = DIVIDE([Revenue], [Active Store Count])
+		formatString: #,0.00
+		displayFolder: Store Performance
+		lineageTag: 129eff43-0674-404c-830e-be96ebb283f5
+
+	measure 'Quantity YTD' = TOTALYTD([Quantity], 'Date'[Date])
+		formatString: #,0
+		displayFolder: Time Intelligence
+		lineageTag: 284f6f81-3fcb-41c6-86b3-909dee825ac8
+
+	measure 'Quantity MTD' = TOTALMTD([Quantity], 'Date'[Date])
+		formatString: #,0
+		displayFolder: Time Intelligence
+		lineageTag: 10cafdaa-5f9d-45be-92ea-42eaa8748037
+
+	measure 'Quantity PY' = CALCULATE([Quantity], SAMEPERIODLASTYEAR('Date'[Date]))
+		formatString: #,0
+		displayFolder: Time Intelligence
+		lineageTag: 48173896-ba1a-4e7b-8cc9-bffe514b4a7a
+
+	measure 'Quantity YoY Change' = [Quantity] - [Quantity PY]
+		formatString: #,0
+		displayFolder: Time Intelligence
+		lineageTag: a125d4b0-dad4-4caa-b3f2-a8430bb50e97
+
+	measure 'Quantity YoY %' = DIVIDE([Quantity YoY Change], [Quantity PY])
+		formatString: 0.0%
+		displayFolder: Time Intelligence
+		lineageTag: 06506a50-09c4-405d-9d0c-c1c5965ca993
+
+	measure 'Revenue Percent of Total' =
+			
+			VAR Total = CALCULATE( [Revenue], REMOVEFILTERS( 'Product' ) )
+			RETURN
+			DIVIDE( [Revenue], Total )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Financials
+		lineageTag: ef45d1f0-c24c-4d46-947d-57ddd609f1bf
+
+	measure 'Revenue YoY Color' =
+			
+			IF(
+			    ISBLANK( [Revenue PY] ),
+			    "#8A8A8A",
+			    IF( [Revenue YoY Change] >= 0, "#12239E", "#E66C37" )
+			)
+		displayFolder: Financials\Formatting
+		lineageTag: fb0f387a-2e0a-46ad-9613-1ad178014b01
+
+	measure 'Category Share of Era' =
+			
+			DIVIDE( [Revenue], CALCULATE( [Revenue], REMOVEFILTERS( Product ) ) )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Financials
+		lineageTag: 059e3e21-3a92-4c9f-9669-2ad3b1bb0cd2
+
+	measure 'Channel Share of Category' =
+			
+			DIVIDE( [Revenue], CALCULATE( [Revenue], REMOVEFILTERS( Store[Channel] ) ) )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Financials
+		lineageTag: 0594ee33-ec34-4736-814b-be089cd44404
+
+	/// Order number; multiple rows share an OrderKey when an order has multiple line items.
+	column OrderKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 2bff40cb-4919-4248-b4a9-9a8d6bb272ad
+		summarizeBy: none
+		sourceColumn: OrderKey
+
+		annotation SummarizationSetBy = User
+
+	/// Line item number within an order; combined with OrderKey to uniquely identify a row.
+	column 'Line Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 08301727-387f-4989-a416-b1729be93f35
+		summarizeBy: none
+		sourceColumn: Line Number
+
+		annotation SummarizationSetBy = User
+
+	/// Date the order was placed; hidden, relates to the Date table.
+	column OrderDate
+		dataType: dateTime
+		isHidden
+		formatString: mm/dd/yyyy
+		lineageTag: d6c60c58-8bcb-4fc8-9762-eca025064647
+		summarizeBy: none
+		sourceColumn: OrderDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Date the order was delivered to the customer.
+	column DeliveryDate
+		dataType: dateTime
+		isHidden
+		formatString: mm/dd/yyyy
+		lineageTag: 8cbd64b6-20d2-4b4b-b4ce-0aab4434720c
+		summarizeBy: none
+		sourceColumn: DeliveryDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Foreign key to Customer identifying who placed the order; hidden.
+	column CustomerKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c0ea4efc-39be-4927-89d0-e8fbd7f3bb74
+		summarizeBy: none
+		sourceColumn: CustomerKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Foreign key to Store identifying where the order was fulfilled; hidden.
+	column StoreKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6b95542c-85bd-4202-a623-e90b089b1752
+		summarizeBy: none
+		sourceColumn: StoreKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Foreign key to Product identifying the item sold; hidden.
+	column ProductKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 1e9c9bbe-7122-40bd-83e6-12a1bf067bfa
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Number of units sold on this order line; hidden, underlies the Quantity measure.
+	column Quantity_col
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 01f502a5-2be4-4d04-9619-078c6872f483
+		summarizeBy: sum
+		sourceColumn: Quantity_col
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// List price per unit before discount, in the transaction currency.
+	column 'Unit Price'
+		dataType: double
+		formatString: \$#,0.00
+		lineageTag: 68821459-c7b8-49d7-9339-a636b2351c24
+		summarizeBy: none
+		sourceColumn: Unit Price
+
+		annotation SummarizationSetBy = User
+
+	/// Actual price per unit charged after discount, in the transaction currency.
+	column 'Net Price'
+		dataType: double
+		formatString: \$#,0.00
+		lineageTag: 0ffa8e21-d347-4a06-b636-bff5674d68c2
+		summarizeBy: none
+		sourceColumn: Net Price
+
+		annotation SummarizationSetBy = User
+
+	/// Cost per unit to the business, in the transaction currency.
+	column 'Unit Cost'
+		dataType: double
+		formatString: \$#,0.00
+		lineageTag: e1ea23d8-144d-4d03-9125-f5c20edd8b42
+		summarizeBy: none
+		sourceColumn: Unit Cost
+
+		annotation SummarizationSetBy = User
+
+	/// Three-letter ISO code of the currency this transaction was recorded in.
+	column 'Currency Code'
+		dataType: string
+		lineageTag: baee72ba-e041-4d79-a2ca-8d6a94d26521
+		summarizeBy: none
+		sourceColumn: Currency Code
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Exchange rate applied to convert this transaction's currency to the reporting currency.
+	column 'Exchange Rate'
+		dataType: double
+		formatString: 0.0000
+		lineageTag: 6587e4ec-4f93-45d6-9109-573abd398f93
+		summarizeBy: average
+		sourceColumn: Exchange Rate
+
+		annotation SummarizationSetBy = User
+
+	partition Sales = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\michael.hewitt\OneDrive - Michael Hewitt\Talks\Contoso csv-1m\sales.csv"),[Delimiter=",", Columns=13, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"OrderKey", Int64.Type}, {"LineNumber", Int64.Type}, {"OrderDate", type date}, {"DeliveryDate", type date}, {"CustomerKey", Int64.Type}, {"StoreKey", Int64.Type}, {"ProductKey", Int64.Type}, {"Quantity", Int64.Type}, {"UnitPrice", type number}, {"NetPrice", type number}, {"UnitCost", type number}, {"CurrencyCode", type text}, {"ExchangeRate", type number}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"LineNumber", "Line Number"}, {"NetPrice", "Net Price"}, {"UnitCost", "Unit Cost"}, {"UnitPrice", "Unit Price"}, {"CurrencyCode", "Currency Code"}, {"ExchangeRate", "Exchange Rate"}, {"Quantity", "Quantity_col"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

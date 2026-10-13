@@ -1,0 +1,11 @@
+EVALUATE
+SELECTCOLUMNS(
+    Store,
+    "StoreKey", Store[StoreKey],
+    "Country Name", Store[Country Name],
+    "State", Store[State],
+    "Square Meters", Store[Square Meters],
+    "Open Date", Store[Open Date],
+    "Close Date", Store[Close Date],
+    "Status", Store[Status]
+)

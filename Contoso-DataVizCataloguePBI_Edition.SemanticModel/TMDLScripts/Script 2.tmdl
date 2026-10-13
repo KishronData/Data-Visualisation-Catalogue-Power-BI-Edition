@@ -1,0 +1,51 @@
+createOrReplace
+
+	/// Pre-aggregated real revenue by store country (origin) and customer continent (destination), calculated live via DAX. Built for flow map visuals.
+	table 'Flow Map Store Country Customer Continent'
+		lineageTag: 00b34c0a-1ebe-49e4-a10b-fd1405999db1
+	
+		/// Store country; the flow origin point in a flow map.
+		column 'Country Name'
+			lineageTag: 2a54442c-517f-453e-949f-c683b18d4f50
+			dataCategory: Country
+			summarizeBy: none
+			isNameInferred
+			sourceColumn: Store[Country Name]
+			columnOrigin: Store.'Country Name'
+	
+			annotation SummarizationSetBy = Automatic
+	
+		/// Customer continent; the flow destination point in a flow map.
+		column Continent
+			lineageTag: 32c37b8a-d8d5-476d-be4d-8ccb9f410688
+			dataCategory: Continent
+			summarizeBy: none
+			isNameInferred
+			sourceColumn: Customer[Continent]
+			columnOrigin: Customer.Continent
+	
+			annotation SummarizationSetBy = Automatic
+	
+		/// Total real Sales revenue for this Store Country/Customer Continent combination; the flow's link weight.
+		column Revenue
+			lineageTag: f3254ca3-f635-4a4d-9f3d-604a8dbf2f6c
+			summarizeBy: sum
+			isNameInferred
+			sourceColumn: [Revenue]
+	
+			annotation SummarizationSetBy = Automatic
+	
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		partition 'Flow Map Store Country Customer Continent' = calculated
+			mode: import
+			source =
+					
+					SUMMARIZECOLUMNS(
+					    Store[Country Name],
+					    Customer[Continent],
+					    "Revenue", [Revenue]
+					)
+
+		annotation PBI_Id = aff865529bfc41b3bd6cd873e2ea2052
+

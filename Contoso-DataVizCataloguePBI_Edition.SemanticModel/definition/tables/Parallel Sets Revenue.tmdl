@@ -1,0 +1,78 @@
+table 'Parallel Sets Revenue'
+	lineageTag: da4f120a-47df-4cf6-9ca3-ffd3b35640f5
+
+	column Source
+		lineageTag: b0fce5ee-e96f-4a73-bffc-fe952ee6f4b4
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Source]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Destination
+		lineageTag: 36fd073f-33d2-4f3c-b0fb-e079ab2da133
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Destination]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Revenue
+		lineageTag: 26a48e69-e99a-49ac-994a-6998b5076434
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Revenue]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Stage
+		formatString: 0
+		lineageTag: ffb7c5d9-cc7c-45aa-8d1a-c48b8cc70399
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Stage]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		formatString: 0
+		lineageTag: 8fe9f5f2-3240-4ada-af79-b6ed89ef6fe3
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Parallel Sets Revenue' = calculated
+		mode: import
+		source =
+				
+				VAR Stage1 =
+				    SELECTCOLUMNS(
+				        SUMMARIZECOLUMNS(
+				            'Date'[Year], 'Product'[Category Name], Customer[Continent], "Rev", [Revenue]
+				        ),
+				        "Year",        'Date'[Year],
+				        "Source",      'Product'[Category Name],
+				        "Destination", Customer[Continent],
+				        "Revenue",     [Rev],
+				        "Stage",       1
+				    )
+				VAR Stage2 =
+				    SELECTCOLUMNS(
+				        SUMMARIZECOLUMNS(
+				            'Date'[Year], Customer[Continent], Store[Country Name], "Rev", [Revenue]
+				        ),
+				        "Year",        'Date'[Year],
+				        "Source",      Customer[Continent],
+				        "Destination", Store[Country Name] & " Stores",
+				        "Revenue",     [Rev],
+				        "Stage",       2
+				    )
+				RETURN
+				    UNION( Stage1, Stage2 )
+
+	annotation PBI_Id = 6405dbd1aaff46afa03f74f7c0fba03d
+

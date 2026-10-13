@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Contoso-DataVizCataloguePBI_Edition"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "1d8f7998-ffcf-4c42-86af-a64e2790e6bf"
+  }
+}

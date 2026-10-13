@@ -1,0 +1,95 @@
+/// Monthly revenue and gross margin targets by product category, calibrated to real historical revenue with seasonal weighting. Built for bullet graph / gauge visuals. Not actual business targets.
+table 'Sales Targets'
+	lineageTag: 385810b3-f0fd-4216-a836-d5327d03380c
+
+	/// Foreign key to Product[CategoryKey] identifying which category this target applies to (many-to-many).
+	column CategoryKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 56a04c20-0317-4597-ba34-5fc40f877bbc
+		summarizeBy: none
+		sourceColumn: CategoryKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+	/// Product category the target applies to, denormalized for convenience. Hidden: slice by Product[Category Name] instead.
+	column CategoryName
+		dataType: string
+		isHidden
+		lineageTag: bc8007bc-3384-4acf-ae8a-0d9313a830c5
+		summarizeBy: none
+		sourceColumn: CategoryName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Calendar year of the target.
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 8e300dbf-4ff4-44d3-b476-941823c9a4b2
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = User
+
+	/// Calendar month number (1-12) of the target.
+	column Month
+		dataType: int64
+		formatString: 0
+		lineageTag: f308ff6b-0998-4c7a-ab3b-b37e491c5ec5
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation SummarizationSetBy = User
+
+	/// First day of the target month; convenient for date-axis visuals. Relates to Date[Date].
+	column MonthStartDate
+		dataType: dateTime
+		formatString: mmm yyyy
+		lineageTag: 8fe48cf1-3dc0-4086-b393-a62d7a17d6eb
+		summarizeBy: none
+		sourceColumn: MonthStartDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Synthetic monthly revenue target, calibrated to the category's real historical revenue and seasonality. Not an actual business target.
+	column RevenueTarget
+		dataType: double
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 78ac0351-b1a8-4e1f-b5e3-67803219f24c
+		summarizeBy: sum
+		sourceColumn: RevenueTarget
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Synthetic gross margin percentage target for the category, stored as a whole number (32 = 32%). Not an actual business target.
+	column GrossMarginTargetPct
+		dataType: int64
+		formatString: 0\%
+		lineageTag: ffe8c9a8-335b-4d58-ac11-30982ba27e9b
+		summarizeBy: average
+		sourceColumn: GrossMarginTargetPct
+
+		annotation SummarizationSetBy = User
+
+	partition 'Sales Targets' = m
+		mode: import
+		source =
+				let
+				  Source = Csv.Document(File.Contents("C:\Users\michael.hewitt\OneDrive - Michael Hewitt\YouTube\ContosoDataVizCSVs\Sales Targets.csv"), [Delimiter = ",", Columns = 7, Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+				  #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				  #"Changed column type" = Table.TransformColumnTypes(#"Promoted headers", {{"CategoryKey", Int64.Type}, {"CategoryName", type text}, {"Year", Int64.Type}, {"Month", Int64.Type}, {"MonthStartDate", type date}, {"RevenueTarget", type number}, {"GrossMarginTargetPct", Int64.Type}})
+				in
+				  #"Changed column type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

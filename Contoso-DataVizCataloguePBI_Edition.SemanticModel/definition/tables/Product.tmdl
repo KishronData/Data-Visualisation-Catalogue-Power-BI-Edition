@@ -1,0 +1,178 @@
+/// Product dimension containing category, sub-category, brand, and cost/price attributes for every item sold.
+table Product
+	lineageTag: 717d3a2b-da72-4222-ac30-9c78e7a5c30b
+
+	/// Surrogate key uniquely identifying each product; used to relate Sales to Product. Hidden.
+	column ProductKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: cbca25a8-a32d-48d9-aba6-687769882971
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Business/SKU code for the product.
+	column ProductCode
+		dataType: int64
+		formatString: 0
+		lineageTag: a8d6cfbf-5338-4532-9a22-01bb46d70d54
+		summarizeBy: none
+		sourceColumn: ProductCode
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Full descriptive name of the product.
+	column 'Product Name'
+		dataType: string
+		lineageTag: 2d4c76b6-1a2a-4cb1-8798-e425a939b946
+		summarizeBy: none
+		sourceColumn: Product Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Manufacturer of the product.
+	column Manufacturer
+		dataType: string
+		lineageTag: 1cbf5415-ece7-4851-ac62-eab1473c0421
+		summarizeBy: none
+		sourceColumn: Manufacturer
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Brand under which the product is sold.
+	column Brand
+		dataType: string
+		lineageTag: d92f33df-e99e-4b51-9c99-3fd79c24ad20
+		summarizeBy: none
+		sourceColumn: Brand
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Color variant of the product.
+	column Color
+		dataType: string
+		lineageTag: d6ab6572-a59f-44c5-9504-d78a038ae32c
+		summarizeBy: none
+		sourceColumn: Color
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Unit of measure for the Weight column (e.g. kg, lb).
+	column 'Weight Unit'
+		dataType: string
+		lineageTag: 3aa3c1dd-a6fc-4c56-b4f3-71b8e09140ed
+		summarizeBy: none
+		sourceColumn: Weight Unit
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Product weight, in the unit specified by Weight Unit.
+	column Weight
+		dataType: double
+		lineageTag: 8a4bfc33-d5c4-4e54-a3a5-baad7cede2b0
+		summarizeBy: none
+		sourceColumn: Weight
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Standard unit cost of the product.
+	column Cost
+		dataType: double
+		formatString: \$#,0.00
+		lineageTag: 4c5f1f98-3fc5-450a-b634-ab5d714ebc1c
+		summarizeBy: none
+		sourceColumn: Cost
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Standard list unit price of the product.
+	column Price
+		dataType: double
+		formatString: \$#,0.00
+		lineageTag: f378a8b3-dbcf-4995-a317-17daa997e522
+		summarizeBy: none
+		sourceColumn: Price
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Surrogate key identifying the product's category; hidden, used for relationships to Category Customer Feedback and Sales Targets.
+	column CategoryKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 551410e1-7a97-4b17-9eb5-f6ff25653ec1
+		summarizeBy: none
+		sourceColumn: CategoryKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Top-level product category (e.g. Computers, Audio).
+	column 'Category Name'
+		dataType: string
+		lineageTag: c9e6c927-1df5-45fc-bdf6-b94614c994aa
+		summarizeBy: none
+		sourceColumn: Category Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Surrogate key identifying the product's sub-category; hidden for consistency with CategoryKey.
+	column SubCategoryKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 72f13816-a50b-477f-9ced-3ead3a8114df
+		summarizeBy: none
+		sourceColumn: SubCategoryKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Second-level product category, nested within Category Name.
+	column 'Sub Category Name'
+		dataType: string
+		lineageTag: 2239e3e3-e674-4464-8f0d-bf3c34e99429
+		summarizeBy: none
+		sourceColumn: Sub Category Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Product drill-down path: Category > Sub Category > Product. Feeds treemap, sunburst, circle packing and drill-down visuals.
+	hierarchy 'Product Hierarchy'
+		lineageTag: 1225996d-d4a6-4d42-8420-012091037b16
+
+		level 'Category Name'
+			lineageTag: 628c4cb5-615d-42ee-91e2-454e1f2654ca
+			column: 'Category Name'
+
+		level 'Sub Category Name'
+			lineageTag: 4c7bf17f-3e13-4581-949c-f4ba73fb3cff
+			column: 'Sub Category Name'
+
+		level 'Product Name'
+			lineageTag: fdbbd947-232a-4654-a774-b1da6ea691f4
+			column: 'Product Name'
+
+	partition Product = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\michael.hewitt\OneDrive - Michael Hewitt\Talks\Contoso csv-1m\product.csv"),[Delimiter=",", Columns=14, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ProductKey", Int64.Type}, {"ProductCode", Int64.Type}, {"ProductName", type text}, {"Manufacturer", type text}, {"Brand", type text}, {"Color", type text}, {"WeightUnit", type text}, {"Weight", type number}, {"Cost", type number}, {"Price", type number}, {"CategoryKey", Int64.Type}, {"CategoryName", type text}, {"SubCategoryKey", Int64.Type}, {"SubCategoryName", type text}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"ProductName", "Product Name"}, {"WeightUnit", "Weight Unit"}, {"CategoryName", "Category Name"}, {"SubCategoryName", "Sub Category Name"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
